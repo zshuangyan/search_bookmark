@@ -3,11 +3,11 @@ from datetime import datetime
 from sys import getsizeof
 import os
 import json
-import operator
 
 from utils.db import query
 from .config import DIR_PATH, INDEXER_FILE, DOC_WORD_FILE
-from .word_frequency import get_word_frequency_from_api
+from .word_segment import word_segment
+from .util import clean_words, get_word_frequency
 
 
 def process_docs(docs_dataset):
@@ -15,7 +15,11 @@ def process_docs(docs_dataset):
     doc_word_frequency = {}
     for row in docs_dataset:
         record = Record(keys=docs_dataset.headers, values=row)
-        word_frequency = get_word_frequency_from_api(record.doc)
+        # 分词并获取词性
+        words_pos = word_segment(record.doc)
+        # 清洗单词
+        words = clean_words(words_pos)
+        word_frequency = get_word_frequency(words)
         doc_word_frequency[record.id] = word_frequency
         for word, frequency in word_frequency.items():
             if word in invert_index:
@@ -26,10 +30,7 @@ def process_docs(docs_dataset):
 
 
 def create_index():
-    start = datetime.now()
     docs = query("select * from entry")
-    end = datetime.now()
-    print("加载数据耗时: %ss" % (end - start).seconds)
 
     start = datetime.now()
     index, doc_word = process_docs(docs)
@@ -40,9 +41,6 @@ def create_index():
     print("单词文档倒排表大小: %s" % getsizeof(index))
     print("文档单词字典大小: %s" % getsizeof(doc_word))
 
-    sorted_index = sorted(index, key=operator.itemgetter(1))
-    for item in sorted_index[:200]:
-        print(item)
     print("过滤掉文档频率集较高的词汇")
     doc_num = len(doc_word)
     index = {word: doc_list for word, doc_list in index.items() if doc_num / len(doc_list) > 3}
@@ -54,6 +52,16 @@ def create_index():
 
     with open(os.path.join(DIR_PATH, DOC_WORD_FILE), "w") as f:
         json.dump(doc_word, f)
+
+    long_word_index = {word: doc_list for word, doc_list in index.items() if len(word) > 15}
+    print("长单词倒排表大小: %s" % getsizeof(long_word_index))
+    with open(os.path.join(DIR_PATH, "long_word_index.json"), "w") as f:
+        json.dump(long_word_index, f)
+
+    normal_word_index = {word: doc_list for word, doc_list in index.items() if len(word) > 1}
+    print("普通单词倒排表大小: %s" % getsizeof(normal_word_index))
+    with open(os.path.join(DIR_PATH, "normal_word_index.json"), "w") as f:
+        json.dump(normal_word_index, f)
 
 
 def get_index():

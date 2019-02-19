@@ -1,5 +1,6 @@
 import random
 import string
+from datetime import datetime
 
 
 def random_name():
@@ -12,6 +13,29 @@ def sequential_name(prefix="", base=0):
         result = "%s%s" % (prefix, base)
         base = base + 1
         return result
+
+    return inner
+
+
+class TimeUnitException(Exception):
+    pass
+
+
+def time_cost(time_unit="seconds"):
+    unit_name = {"seconds": "秒",
+                 "minutes": "分钟",
+                 "hours": "小时"}
+    if time_unit not in unit_name:
+        raise TimeUnitException("时间单位只能是: hours(时), minutes(分), seconds(秒)")
+
+    def inner(func, *args, **kwargs):
+        start = datetime.now()
+        func(*args, **kwargs)
+        end = datetime.now()
+        duration = end - start
+        value = getattr(duration, time_unit)
+        print("花费时间: %s%s" % (value, unit_name.get(time_unit)))
+
     return inner
 
 
