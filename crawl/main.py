@@ -59,28 +59,28 @@ def download_and_save(leaves):
         try:
             html = download(data.url)
         except Exception as e:
-            print("下载: %s(%s)发生异常: %s" % (leaf.name, data.url, e))
+            logging.info("下载: %s(%s)发生异常: %s" % (leaf.name, data.url, e))
             continue
 
         # 解析
         try:
             text = extract_text(html)
             if len(bytes(text, encoding="utf-8")) > 65535:
-                print("网站: %s内容超出65535个字符" % data.url)
+                logging.info("网站: %s内容超出65535个字符" % data.url)
                 continue
         except Exception as e:
-            print("解析: %s(%s)发生异常: %s" % (leaf.name, data.url, e))
+            logging.info("解析: %s(%s)发生异常: %s" % (leaf.name, data.url, e))
             continue
 
-        print("成功下载并解析: ", data.url)
+        logging.info("成功下载并解析: ", data.url)
         dataset.append((leaf.name, data.url, data.created, text))
 
     try:
         save(dataset)
     except Exception as e:
-        print("保存到数据库发生异常: %s" % e)
+        logging.info("保存到数据库发生异常: %s" % e)
     else:
-        print("保存%s条数据到数据库" % len(dataset))
+        logging.info("保存%s条数据到数据库" % len(dataset))
 
 
 def main():

@@ -1,15 +1,28 @@
-import jieba.posseg as pseg
 from collections import Counter
+import logging
+import re
 
 from .config import JIEBA_CHINESE_POS
+from .word_segment.textblob import normalize
+
+SEPS = ["-", "_", "\.", "\/"]
 
 
-def group(elements, group_size, sep):
+def get_stop_words(file_path):
+    with open(file_path) as f:
+        result = f.readlines()
+        result = [r for r in result if r.strip()]
+        return result
+
+
+def group(elements, group_size):
     index = 0
     total_elements = len(elements)
     groups = []
     while index < total_elements:
-        groups.append(sep.join(elements[index: group_size]))
+        current_group = elements[index: index + group_size]
+        if current_group.strip():
+            groups.append(current_group)
         index += group_size
     return groups
 
@@ -22,7 +35,7 @@ def get_word_frequency(words):
 
 
 def filter_words_by_pos(pos):
-    if pos in JIEBA_CHINESE_POS or pos.startswith("N") or pos.startswith("V"):
+    if pos in JIEBA_CHINESE_POS or pos.startswith("N") or pos.startswith("V") or pos.startswith("J"):
         return True
     else:
         return False
@@ -32,42 +45,37 @@ def filter_words_by_length(word_len):
     return 1 < word_len < 30
 
 
+def english(word):
+    return not any(map(lambda x: ord(x) >= 128, word))
+
+
+def split_word(word):
+    result = [word for word in re.split("|".join(SEPS), word) if len(word) > 1]
+    logging.debug("分解单词: %s" % result)
+    return result
+
+
 def clean_words(words_pos):
     if not words_pos:
         return []
     total_words = len(words_pos)
-    print("单词总量: %s" % total_words)
+    logging.info("清洗前单词总量: %s" % total_words)
 
-    normal_words = [word for word, pos in words_pos if filter_words_by_pos(pos)]
+    # 通过词性过滤单词
+    words_pos = [(word, pos) for word, pos in words_pos if filter_words_by_pos(pos)]
 
-    # 过滤掉过长或者过短的单词
-    normal_words = [word for word in normal_words if filter_words_by_length(len(word))]
+    # 归一化, 不需要处理中文
+    normal_words = [normalize(word, pos) if english(word) else word for word, pos in words_pos]
 
-    # Todo: 处理中间含有连接符的单词
-    normal_num = len(normal_words)
-    print("过滤后单词总量: %s" % normal_num)
-    print("清洗无关单词比例: %s" % (1 - normal_num / total_words))
+    # 如果单词长度较长, 处理中间含有连接符的情况
+    words_nested = [split_word(word) for word in normal_words]
+    words = [word for nest in words_nested for word in nest]
 
-    # Todo: 单词形式归一化
-    # 单词转化为小写形式
-    return [word.lower() for word in normal_words]
+    # 过滤掉过长或者过短的单词, 并把单词转换为小写形式
+    words = [word.lower() for word in words if filter_words_by_length(len(word))]
 
-
-def get_doc_lang(text):
-    words = pseg.cut(text)
-    words = {word: flag for word, flag in words}
-    chinese_words = [word for word, flag in words.items() if flag in JIEBA_CHINESE_POS]
-    eng_words = [word for word, flag in words.items() if flag == "eng"]
-
-    if not chinese_words and eng_words:
-        raise Exception("text is empty")
-    chinese_words_ratio = len(chinese_words) / len(chinese_words) + len(eng_words)
-    if chinese_words_ratio < 0.2:
-        return "en"
-    elif chinese_words_ratio > 0.8:
-        return "zh"
-    else:
-        return "zh_en"
+    logging.info("清洗后单词总量: %s" % len(words))
+    return words
 
 
 def remove_consecutive_words(words):

@@ -30,7 +30,7 @@ class Element:
         return "<name=%s data=%s>" % (self.name, self.data)
 
     def traverse(self, depth=0):
-        print("%s%s" % (' ' * 2 * depth, self))
+        logging.info("%s%s" % (' ' * 2 * depth, self))
         for child in self.children:
             child.traverse(depth + 1)
 

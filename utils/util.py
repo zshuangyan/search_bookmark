@@ -34,7 +34,7 @@ def time_cost(time_unit="seconds"):
         end = datetime.now()
         duration = end - start
         value = getattr(duration, time_unit)
-        print("花费时间: %s%s" % (value, unit_name.get(time_unit)))
+        logging.info("花费时间: %s%s" % (value, unit_name.get(time_unit)))
 
     return inner
 

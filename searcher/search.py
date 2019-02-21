@@ -1,13 +1,13 @@
 import math
 
-from parser.indexer import get_index
+from parser.indexer import get_indexer
 from .models import SearchResult
 
-index, doc_word = get_index()
-doc_num = len(doc_word)
+indexer = get_indexer()
+doc_num, index = indexer["doc_num"], indexer["index"]
 
 
-def search(query):
+def search(query, **kwargs):
     words = query.split()
     doc_set = set()
     for word in words:
@@ -25,4 +25,10 @@ def search(query):
                 doc_word_tf_idf[doc_id][word] = df * word_frequency
 
     doc_score = {key: sum(value.values()) for key, value in doc_word_tf_idf.items()}
-    return SearchResult(found=True, results=sorted(doc_score.items(), reverse=True, key=lambda x: x[1]))
+    results = sorted(doc_score.items(), reverse=True, key=lambda x: x[1])
+    if "num_limit" in kwargs:
+        results = results[:kwargs.get("num_limit")]
+    return SearchResult(found=True, results=results)
+
+if __name__ == "__main__":
+    print(search("java"))
