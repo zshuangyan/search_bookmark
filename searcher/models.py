@@ -7,10 +7,11 @@ class SearchResult:
         return "Found: %s, Results: \n%s" % (self.found, self.results)
 
 
-class SearchCondition:
-    def __init__(self, query):
-        pass
+class Word:
+    def __init__(self, raw, weights, fuzzy):
+        self.raw = raw
+        self.weights = weights
+        self.fuzzy = fuzzy
 
-class FilterCondition:
-    def __init__(self):
-        pass
+    def __str__(self):
+        return "word content: %s, weights: %s, fuzzy: %s" % (self.raw, self.weights, self.fuzzy)

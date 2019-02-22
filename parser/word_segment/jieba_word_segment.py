@@ -42,7 +42,7 @@ def get_doc_lang(text):
     logging.debug("中文单词占比: %s" % chinese_words_ratio)
     if chinese_words_ratio < 0.1:
         return "en"
-    elif chinese_words_ratio > 0.6:
+    elif chinese_words_ratio > 0.9:
         return "zh"
     else:
         return "zh_en"

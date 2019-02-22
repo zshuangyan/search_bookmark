@@ -23,7 +23,7 @@ def normalize(word, pos):
     except Exception as e:
         logging.error("单词: (%s, %s), 归一化出错: %s" % (word, pos, e))
         result = word
-    return result
+    return result, pos
 
 
 def _penn_to_wordnet(tag):

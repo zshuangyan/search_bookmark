@@ -1,7 +1,6 @@
 import logging
 from parser.config import MAX_WORDS
 from parser.util import group
-from .stanford_word_segment import stanford_word_segment
 from .jieba_word_segment import jieba_word_segment, get_doc_lang
 from .textblob import textblob_word_segment
 
@@ -42,11 +41,5 @@ def _word_segment(text, lang):
         raise Exception("文本不能为空")
     if lang == "en":
         return textblob_word_segment(text)
-    elif lang == "zh_en":
-        try:
-            return stanford_word_segment(text, lang='zh')
-        except Exception as e:
-            logging.error("调用斯坦福分词API出错: %s, 分词内容: \n%s" % (e, text[:50]))
-            return jieba_word_segment(text)
     else:
         return jieba_word_segment(text)

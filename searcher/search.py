@@ -20,7 +20,7 @@ def search(query, **kwargs):
         doc_list = index.get(word)
         if doc_list:
             num = len(doc_list)
-            df = math.log10(doc_num/ num)
+            df = math.log10(doc_num / num)
             for doc_id, word_frequency in doc_list:
                 doc_word_tf_idf[doc_id][word] = df * word_frequency
 
@@ -29,6 +29,7 @@ def search(query, **kwargs):
     if "num_limit" in kwargs:
         results = results[:kwargs.get("num_limit")]
     return SearchResult(found=True, results=results)
+
 
 if __name__ == "__main__":
     print(search("java"))
