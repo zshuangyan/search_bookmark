@@ -11,7 +11,7 @@ def stanford_word_segment(text, lang="en"):
     params = {"properties": properties, "pipelineLanguage": lang}
     result = requests.post(url, data=text.encode("utf-8"), params=params)
     if result.status_code != 200:
-        logging.info("错误码: %s, 响应内容: %s" % (result.status_code, result.content))
+        logging.debug("错误码: %s, 响应内容: %s" % (result.status_code, result.content))
         raise Exception(result.content)
     sentences = result.json()["sentences"]
     tokens = [token for sentence in sentences for token in sentence["tokens"]]

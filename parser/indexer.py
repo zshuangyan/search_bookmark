@@ -25,6 +25,7 @@ def process_docs(docs_dataset):
         # 清洗单词
         words = clean_words(words_pos)
         word_frequency = get_word_frequency(words)
+        logging.info("文档词频统计结果: %s" % word_frequency)
         for word, frequency in word_frequency.items():
             if word in invert_index:
                 invert_index[word].append((record.id, frequency))

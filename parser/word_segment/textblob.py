@@ -12,15 +12,14 @@ def textblob_word_segment(text):
 def normalize(word, pos):
     w = Word(word)
     try:
-        if pos.startswith("N"):
-            result = w.singularize()
+        tag = _penn_to_wordnet(pos)
+        if tag:
+            result = w.lemmatize(tag)
+            logging.debug("单词: (%s, %s), 归一化后: %s" % (word, pos, result))
+            if word[-2:] == "ed" and result == word:
+                logging.warning("单词: (%s, %s), 归一化后没有改变" % (word, pos))
         else:
-            tag = _penn_to_wordnet(pos)
-            if tag:
-                result = w.lemmatize(tag)
-                logging.debug("单词: (%s, %s), 归一化后: %s" % (word, pos, result))
-            else:
-                result = word
+            result = word
     except Exception as e:
         logging.error("单词: (%s, %s), 归一化出错: %s" % (word, pos, e))
         result = word

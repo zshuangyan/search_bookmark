@@ -39,8 +39,8 @@ def get_doc_lang(text):
     if (not chinese_words) and (not eng_words):
         raise Exception("无法从文本中过滤出中文和英文, 结巴分词结果: %s" % words)
     chinese_words_ratio = len(chinese_words) / (len(chinese_words) + len(eng_words))
-    logging.info("中文单词占比: %s" % chinese_words_ratio)
-    if chinese_words_ratio < 0.3:
+    logging.debug("中文单词占比: %s" % chinese_words_ratio)
+    if chinese_words_ratio < 0.1:
         return "en"
     elif chinese_words_ratio > 0.6:
         return "zh"

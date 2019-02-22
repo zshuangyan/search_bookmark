@@ -12,14 +12,14 @@ def word_segment(text):
             return []
         try:
             lang = get_doc_lang(inner_text)
-            logging.info("当前文档语言: %s" % lang)
+            logging.debug("当前文档语言: %s" % lang)
         except Exception as e:
             logging.error("无法获取当前段落语言: %s, 段落内容:\n%s" % (e, inner_text))
             return []
         return _word_segment(inner_text, lang)
 
     lines = [line for line in text.split("\n") if line.strip()]
-    logging.info("当前文档总行数: %s" % len(lines))
+    logging.debug("当前文档总行数: %s" % len(lines))
     if len(text) > MAX_WORDS:
         total_word_pos = []
         paragraphs = group(text, group_size=MAX_WORDS)
@@ -33,7 +33,7 @@ def word_segment(text):
         result = total_word_pos
     else:
         result = inner(text)
-    logging.info("文档分词结果: %s" % result)
+    logging.debug("文档分词结果: %s" % result)
     return result
 
 
