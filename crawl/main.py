@@ -9,6 +9,7 @@ from records import Record
 from tablib import Dataset
 import os
 import concurrent.futures
+import logging
 
 from utils.util import get_name
 from utils.download import download
@@ -86,7 +87,7 @@ def download_and_save(leaves):
 def main():
     root_element = visit(root)
     leaves = root_element.get_leaves()
-    # 控制同时运行的线程为8
+    # 控制同时运行的线程为5
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         index, step = 0, 10
         while index < len(leaves):
