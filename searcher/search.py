@@ -1,7 +1,7 @@
 import math
 
 from parser.indexer import get_indexer
-from .models import SearchResult
+from .models import SearchResult, Word
 
 indexer = get_indexer()
 doc_num, index = indexer["doc_num"], indexer["index"]

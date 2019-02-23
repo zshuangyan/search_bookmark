@@ -40,4 +40,7 @@ def parse_word(word):
         raw = word[:fuzzy_index]
         fuzzy = min(len(word), int(word[fuzzy_index + 1:]))
 
+    # 单词归一化为小写形式
+    raw = raw.lower()
+
     return Word(raw, fuzzy=fuzzy, weights=weights)
