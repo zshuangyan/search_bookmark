@@ -1,7 +1,7 @@
 from base_handler import BaseHandler
 from utils.validate import json_validate
 from searcher.search import search
-import json
+import logging
 
 SEARCH_SCHEMA = {
     "type": "object",
@@ -21,7 +21,10 @@ SEARCH_SCHEMA = {
 class SearchHandler(BaseHandler):
     @json_validate(SEARCH_SCHEMA)
     def post(self):
+        logging.info(self.data)
         result = search(**self.data)
-        self.write({"error_code": 200,
-                    "data": str(result),
-                    "error_msg": "query succeed"})
+        self.write(
+            {"error_code": 200,
+             "data": str(result),
+             "error_msg": "query succeed"}
+        )

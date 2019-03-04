@@ -7,7 +7,7 @@ def json_validate(schema):
             try:
                 jsonschema.validate(handler.data, schema)
             except jsonschema.ValidationError as e:
-                handler.write_error(status_code=400, exc_info=e)
+                handler.write_error(status_code=400, error_msg=e)
             func(handler)
         return inner
     return decorator
