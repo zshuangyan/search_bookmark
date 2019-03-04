@@ -13,6 +13,7 @@ logging.config.dictConfig(LOGGING)
 indexer = get_indexer()
 doc_num, index = indexer["doc_num"], indexer["index"]
 
+
 def get_args():
     search_arg = argparse.ArgumentParser()
     search_arg.add_argument("query", help="search content")
