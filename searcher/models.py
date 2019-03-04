@@ -4,7 +4,7 @@ class SearchResult:
         self.results = results
 
     def __str__(self):
-        return "Found: %s, Results: \n%s" % (self.found, self.results)
+        return "Found: %s, Results: \n%s" % (self.found, "\n".join(repr(result) for result in self.results))
 
 
 class Word:
