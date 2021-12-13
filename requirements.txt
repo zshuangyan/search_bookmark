@@ -6,7 +6,7 @@ et-xmlfile==1.0.1
 idna==2.8
 jdcal==1.4
 jieba==0.39
-lxml==3.8.0
+lxml==4.6.5
 odfpy==1.4.0
 openpyxl==2.5.14
 pkg-resources==0.0.0
